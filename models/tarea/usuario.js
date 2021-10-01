@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const Joi = require("joi");
 const config = require("config");
+const Schema = mongoose.Schema;
 
 const usuarioSchema = new mongoose.Schema({
   user: String,
@@ -10,6 +11,7 @@ const usuarioSchema = new mongoose.Schema({
   alias: String,
   correo: String,
   activo: Boolean,
+  oficina: [{ type: Schema.Types.ObjectId, ref: "oficina" }],
   rol: Array,
   usuario_crea: String,
   fecha_crea: {
