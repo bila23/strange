@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const Joi = require("joi");
 const config = require("config");
-const { shuffle } = require("lodash");
 
 const usuarioSchema = new mongoose.Schema({
   user: String,
