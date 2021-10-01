@@ -3,7 +3,6 @@ const winston = require("winston");
 require("winston-mongodb");
 const config = require("config");
 const { MONGO_URL } = require("./db_url");
-const { eventNames } = require("superagent");
 
 module.exports = function () {
   if (!config.get("general.jwt")) {
