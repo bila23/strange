@@ -11,7 +11,7 @@ router.get("/", auth, async (req, res) => {
 });
 
 router.get("/:id", auth, async (req, res) => {
-  const model = await Usuario.findById(req.params.id);
+  const model = await Usuario.findById(req.params.id).populate("oficina");
   if (!model) return res.status(400).send("No se encontró el registro");
   res.send(model);
 });
