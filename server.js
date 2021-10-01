@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
 
-require("./startup/logging")();
-require("./startup/config")(app);
-require("./startup/routes")(app);
+require("./start/logging")();
+require("./start/config")(app);
+require("./start/routes")(app);
 
 module.exports = app;
