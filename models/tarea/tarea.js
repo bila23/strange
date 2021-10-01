@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
-const { validate } = require("node-cron");
 const Schema = mongoose.Schema;
 
 const tareaSchema = new mongoose.Schema({
@@ -27,7 +26,7 @@ function validateTarea(model) {
     estado: Joi.string().required(),
     usuario_crea: Joi.string().required(),
   });
-  return validate.schema(model);
+  return schema.validate(model);
 }
 
 exports.Tarea = Tarea;
