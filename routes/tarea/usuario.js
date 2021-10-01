@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { Usuario, validateUser } = require("../../models/tarea/usuario");
+const bcrypt = require("bcryptjs");
 const auth = require("../../middleware/auth");
+const config = require("config");
+const { Usuario, validateUser } = require("../../models/tarea/usuario");
 
 router.get("/", auth, async (req, res) => {
   const list = await Usuario.find().populate("oficina").sort({
@@ -20,14 +22,12 @@ router.post("/", auth, async (req, res) => {
   let register = await Usuario.findOne({
     user: req.body.user,
   }).exec();
-
   if (register)
     return res.status(400).send("Ya existe un usuario con ese nombre");
 
   register = await Usuario.findOne({
     correo: req.body.correo,
   });
-
   if (register)
     return res.status(400).send("Ya existe un usuario con ese correo");
 
@@ -35,16 +35,28 @@ router.post("/", auth, async (req, res) => {
   if (error) return res.status(400).send(error.details[0].message);
 
   let model = new Usuario(body);
+  const salt = await bcrypt.genSalt(10);
+  model.password = await bcrypt.hash(model.password, salt);
   model = await model.save();
+  const token = model.generateAuthToken();
 
-  res.send(model);
+  res
+    .header(config.get("general.token_alias"), token)
+    .header(
+      config.get("general.header-token"),
+      config.get("general.token_alias")
+    )
+    .send(model);
 });
 
 router.put("/:id", auth, async (req, res) => {
+  const salt = await bcrypt.genSalt(10);
+  const password = await bcrypt.hash(req.body.password, salt);
+
   const conditions = { _id: req.params.id };
   const updateField = {
     user: req.body.user,
-    password: req.body.password,
+    password: password,
     nombre: req.body.nombre,
     alias: req.body.alias,
     correo: req.body.correo,
