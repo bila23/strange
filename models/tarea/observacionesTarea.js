@@ -25,7 +25,7 @@ function validateObs(model) {
     descripcion: Joi.string().required(),
     usuario_crea: Joi.string().required(),
   });
-  return schena.validate(model);
+  return schema.validate(model);
 }
 
 exports.ObservacionesTarea = ObservacionesTarea;
