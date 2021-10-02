@@ -34,7 +34,7 @@ router.post("/", auth, async (req, res) => {
   const { error } = validateUser(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  let model = new Usuario(body);
+  let model = new Usuario(req.body);
   const salt = await bcrypt.genSalt(10);
   model.password = await bcrypt.hash(model.password, salt);
   model = await model.save();
