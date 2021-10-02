@@ -3,7 +3,7 @@ const router = express.Router();
 const auth = require("../../middleware/auth");
 const { BitacoraEstado } = require("../../models/tarea/bitacoraEstado");
 
-router.get("/:tarea", auth, async (req, res) => {
+router.get("/tarea/:tarea", auth, async (req, res) => {
   const list = await BitacoraEstado.find({ tarea: req.params.tarea }).sort({
     fecha_crea: 1,
   });
