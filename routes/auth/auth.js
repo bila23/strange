@@ -7,6 +7,7 @@ const { Usuario } = require("../../models/tarea/usuario");
  * Login de la aplicacion
  */
 router.post("/", async (req, res) => {
+  console.log("llego");
   const { error } = validateUser(req.body);
   if (error) {
     res.status(400).send(error.details[0].message);
