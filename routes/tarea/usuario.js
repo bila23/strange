@@ -9,7 +9,7 @@ router.get("/", auth, async (req, res) => {
   const list = await Usuario.find().populate("oficina").sort({
     user: 1,
   });
-  res.send(list);
+  res.status(200).send(list);
 });
 
 router.get("/:id", auth, async (req, res) => {
