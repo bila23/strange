@@ -5,8 +5,10 @@ const observacionTarea = require("../routes/tarea/observacionTarea");
 const bitacoraEstado = require("../routes/tarea/bitacoraEstado");
 const oficina = require("../routes/tarea/oficina");
 const auth = require("../routes/auth/auth");
+const rol = require("../routes/auth/rol");
 
 module.exports = function (app) {
+  app.use("/rol", rol);
   app.use("/bitacora-estado", bitacoraEstado);
   app.use("/observacion-tarea", observacionTarea);
   app.use("/oficina", oficina);
