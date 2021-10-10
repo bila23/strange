@@ -40,6 +40,7 @@ function validateUser(model) {
   const schema = Joi.object({
     user: Joi.string().required(),
     password: Joi.string().required(),
+    oficina: Joi.string().required(),
     nombre: Joi.string().required(),
     alias: Joi.string().required(),
     correo: Joi.string().required(),

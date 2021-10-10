@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const auth = require("../../middleware/auth");
 const { Rol } = require("../../models/tarea/rol");
 
 router.get("/", auth, async (req, res) => {
