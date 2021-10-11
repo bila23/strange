@@ -50,13 +50,9 @@ router.post("/", auth, async (req, res) => {
 });
 
 router.put("/:id", auth, async (req, res) => {
-  const salt = await bcrypt.genSalt(10);
-  const password = await bcrypt.hash(req.body.password, salt);
-
   const conditions = { _id: req.params.id };
   const updateField = {
     user: req.body.user,
-    password: password,
     nombre: req.body.nombre,
     alias: req.body.alias,
     correo: req.body.correo,
