@@ -5,6 +5,14 @@ const auth = require("../../middleware/auth");
 const config = require("config");
 const { Usuario, validateUser } = require("../../models/tarea/usuario");
 
+router.get("/operador", auth, async (req, res) => {
+  const roles = ["OPERADOR"];
+  const list = await Usuario.find({ rol: roles }).sort({
+    user: 1,
+  });
+  res.status(200).send(list);
+});
+
 router.get("/", auth, async (req, res) => {
   const list = await Usuario.find().populate("oficina").sort({
     user: 1,
