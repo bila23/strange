@@ -4,6 +4,6 @@ const { sendMailToSave } = require("../services/TareaService");
 describe("Funcionalidad relacionada a tareas", () => {
   it("should send a mail", async () => {
     const flag = await sendMailToSave();
-    expect(true).toBe(true);
+    expect(flag).toBe(true);
   });
 });
