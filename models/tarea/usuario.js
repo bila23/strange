@@ -27,6 +27,7 @@ usuarioSchema.methods.generateAuthToken = function () {
       rol: this.rol,
       user: this.user,
       nombre: this.nombre,
+      oficina: this.oficina,
       alias: this.alias,
     },
     config.get("general.jwt")
