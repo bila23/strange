@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
 const { Tarea, validateTarea } = require("../../models/tarea/tarea");
+const TareaService = require("../../services/TareaService");
 
 router.get("/oficina/:id", auth, async (req, res) => {
   const list = await Tarea.find({ oficina: req.params.id }).sort({
@@ -29,6 +30,8 @@ router.post("/", auth, async (req, res) => {
 
   let model = new Tarea(req.body);
   model = await model.save();
+
+  await TareaService.sendMailToSave();
 
   res.send(model);
 });
