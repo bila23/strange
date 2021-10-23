@@ -19,6 +19,10 @@ router.post("/", async (req, res) => {
     res.status(400).send("Usuario y/o contraseña incorrecta");
     return;
   }
+  if (!user.activo)
+    return res
+      .status(400)
+      .send("Su usuario se encuentra inactivo, no puede ingresar al sistema");
 
   const validPassword = await bcrypt.compare(req.body.password, user.password);
   if (!validPassword) {
