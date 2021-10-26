@@ -43,6 +43,19 @@ router.post("/", auth, async (req, res) => {
   res.send(model);
 });
 
+router.put("/denegar/:id", auth, async (req, res) => {
+  const conditions = { _id: req.params.id };
+  const updateField = {
+    estado: "DENEGADA",
+  };
+  const model = await Tarea.updateOne(conditions, updateField);
+  if (!model)
+    return res
+      .status(400)
+      .send("No se encontró el registro que se desea actualizar");
+  res.send(model);
+});
+
 router.put("/:id", auth, async (req, res) => {
   const conditions = { _id: req.params.id };
   const updateField = {
