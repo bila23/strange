@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "test": "jest --verbose --watchAll",
+    "test": "jest --verbose --watchAll --detectOpenHandles",
     "start": "node index.js"
   },
   "repository": {
