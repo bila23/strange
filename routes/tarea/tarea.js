@@ -4,6 +4,13 @@ const auth = require("../../middleware/auth");
 const { Tarea, validateTarea } = require("../../models/tarea/tarea");
 const TareaService = require("../../services/TareaService");
 
+router.get("/ingresadas", auth, async (req, res) => {
+  const list = await Tarea.find({ estado: "INGRESADA" }).sort({
+    fecha: -1,
+  });
+  res.send(list);
+});
+
 router.get("/oficina/:id", auth, async (req, res) => {
   const list = await Tarea.find({ oficina: req.params.id }).sort({
     fecha: 1,
