@@ -12,9 +12,4 @@ describe("User test", () => {
   afterAll(async () => {
     await mongoose.disconnect();
   });
-
-  it("should recover email auth", async () => {
-    const list = await UsuarioService.findUserAuthorize();
-    expect(list.length).toBe(2);
-  });
 });
