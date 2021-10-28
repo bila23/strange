@@ -6,6 +6,17 @@ const { BitacoraEstado } = require("../../models/tarea/bitacoraEstado");
 const { Usuario } = require("../../models/tarea/usuario");
 const TareaService = require("../../services/TareaService");
 
+router.get("/today/autorizadas/:user", auth, async (req, res) => {
+  const list = await Tarea.find({
+    estado: "APROBADA",
+    responsable: req.params.user,
+    fecha: new Date(),
+  }).sort({
+    fecha: -1,
+  });
+  res.send(list);
+});
+
 router.get("/autorizadas/:user", auth, async (req, res) => {
   const list = await Tarea.find({
     estado: "APROBADA",
