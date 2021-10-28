@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
 const { Tarea, validateTarea } = require("../../models/tarea/tarea");
+const { BitacoraEstado } = require("../../models/tarea/bitacoraEstado");
 const TareaService = require("../../services/TareaService");
 
 router.get("/ingresadas", auth, async (req, res) => {
