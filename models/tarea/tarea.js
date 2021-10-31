@@ -9,6 +9,10 @@ const tareaSchema = new mongoose.Schema({
   responsable: [{ type: Schema.Types.ObjectId, ref: "usuario" }],
   autoriza: [{ type: Schema.Types.ObjectId, ref: "usuario" }],
   estado: String,
+  mes: Number,
+  anio: Number,
+  codigo: String,
+  registro: Number,
   usuario_crea: String,
   fecha_crea: {
     type: Date,
@@ -26,6 +30,10 @@ function validateTarea(model) {
     responsable: Joi.string().required(),
     autoriza: Joi.any().optional(),
     estado: Joi.string().required(),
+    mes: Joi.any().optional(),
+    anio: Joi.any().optional(),
+    codigo: Joi.any().optional(),
+    registro: Joi.any().optional(),
     usuario_crea: Joi.string().required(),
   });
   return schema.validate(model);

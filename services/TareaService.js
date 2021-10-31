@@ -1,5 +1,7 @@
 const { sendMail, sendMailWithCC } = require("../util/mail");
 const UsuarioService = require("./UsuarioService");
+const { Tarea } = require("../models/tarea/tarea");
+const moment = require("moment");
 
 async function sendMailToSave() {
   try {
@@ -19,4 +21,15 @@ async function sendMailToSave() {
   }
 }
 
+async function generateCode() {
+  const actualYear = moment().year();
+  const tarea = await Tarea.findOne({ anio: actualYear }).sort({
+    registro: -1,
+  });
+  if (!tarea) return 1;
+
+  return tarea.registro + 1;
+}
+
 exports.sendMailToSave = sendMailToSave;
+exports.generateCode = generateCode;
