@@ -110,7 +110,9 @@ router.put("/autorizar/:id/:user", auth, async (req, res) => {
   const bitacora = new BitacoraEstado(bitacoraModel);
   await bitacora.save();
 
-  res.send(model);
+  const tareaReturn = await Tarea.findById(req.params.id);
+
+  res.send(tareaReturn);
 });
 
 router.put("/denegar/:id", auth, async (req, res) => {
