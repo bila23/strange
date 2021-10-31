@@ -5,6 +5,7 @@ const { Tarea, validateTarea } = require("../../models/tarea/tarea");
 const { BitacoraEstado } = require("../../models/tarea/bitacoraEstado");
 const { Usuario } = require("../../models/tarea/usuario");
 const TareaService = require("../../services/TareaService");
+const moment = require("moment");
 
 router.get("/today/autorizadas/:user", auth, async (req, res) => {
   const list = await Tarea.find({
@@ -62,6 +63,13 @@ router.post("/", auth, async (req, res) => {
   if (error) return res.status(400).send(error.details[0].message);
 
   let model = new Tarea(req.body);
+  const registro = await TareaService.generateCode();
+  const todayMoment = moment();
+
+  model.registro = registro;
+  model.mes = 1 + todayMoment.month();
+  model.anio = todayMoment.year();
+  model.codigo = registro + " - " + todayMoment.year();
   model = await model.save();
 
   await TareaService.sendMailToSave();
