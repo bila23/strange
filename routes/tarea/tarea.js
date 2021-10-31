@@ -8,12 +8,14 @@ const TareaService = require("../../services/TareaService");
 const moment = require("moment");
 
 router.get("/today/autorizadas/:user", auth, async (req, res) => {
+  const actualMoment = moment();
   const list = await Tarea.find({
     estado: "APROBADA",
     responsable: req.params.user,
-    fecha: new Date(),
+    anio: actualMoment.year(),
+    mes: 1 + actualMoment.month(),
   }).sort({
-    fecha: -1,
+    registro: -1,
   });
   res.send(list);
 });
