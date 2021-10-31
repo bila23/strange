@@ -112,6 +112,8 @@ router.put("/autorizar/:id/:user", auth, async (req, res) => {
 
   const tareaReturn = await Tarea.findById(req.params.id);
 
+  await TareaService.sendMailToOperador(tareaReturn);
+
   res.send(tareaReturn);
 });
 

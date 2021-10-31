@@ -1,6 +1,7 @@
 const { sendMail, sendMailWithCC } = require("../util/mail");
-const UsuarioService = require("./UsuarioService");
 const { Tarea } = require("../models/tarea/tarea");
+const { Usuario } = require("../models/tarea/usuario");
+const UsuarioService = require("./UsuarioService");
 const moment = require("moment");
 
 async function sendMailToSave() {
@@ -21,6 +22,22 @@ async function sendMailToSave() {
   }
 }
 
+async function sendMailToOperador(tarea) {
+  try {
+    const usuario = await Usuario.findById(tarea.responsable[0]);
+    if (!usuario) return false;
+
+    const title = "NUEVA TAREA APROBADA";
+    const html = `Se ha aprobado una nueva tarea para que la realice, la cual es: <br/><div>
+      ${tarea.descripcion}</div><br/>Favor ingrese al sistema para su seguimiento.<br/><a href="https://jarvis-alpha.vercel.app">[Clic para ir al sistema]</a>`;
+
+    await sendMail(usuario.correo, title, html);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 async function generateCode() {
   const actualYear = moment().year();
   const tarea = await Tarea.findOne({ anio: actualYear }).sort({
@@ -33,3 +50,4 @@ async function generateCode() {
 
 exports.sendMailToSave = sendMailToSave;
 exports.generateCode = generateCode;
+exports.sendMailToOperador = sendMailToOperador;
