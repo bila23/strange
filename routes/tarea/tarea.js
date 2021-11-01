@@ -50,7 +50,7 @@ router.get("/oficina/:id", auth, async (req, res) => {
 
 router.get("/responsable/:id", auth, async (req, res) => {
   const list = await Tarea.find({ responsable: req.params.id }).sort({
-    registro: 1,
+    registro: -1,
   });
   res.send(list);
 });
