@@ -26,7 +26,7 @@ router.get("/autorizadas/:user", auth, async (req, res) => {
     estado: "APROBADA",
     responsable: req.params.user,
   }).sort({
-    fecha: -1,
+    registro: -1,
   });
   res.send(list);
 });
