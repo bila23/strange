@@ -36,21 +36,21 @@ router.get("/ingresadas", auth, async (req, res) => {
     .populate("responsable")
     .populate("oficina")
     .sort({
-      fecha: -1,
+      registro: -1,
     });
   res.send(list);
 });
 
 router.get("/oficina/:id", auth, async (req, res) => {
   const list = await Tarea.find({ oficina: req.params.id }).sort({
-    fecha: 1,
+    registro: -1,
   });
   res.send(list);
 });
 
 router.get("/responsable/:id", auth, async (req, res) => {
   const list = await Tarea.find({ responsable: req.params.id }).sort({
-    fecha: 1,
+    registro: 1,
   });
   res.send(list);
 });
