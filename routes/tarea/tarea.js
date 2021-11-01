@@ -12,9 +12,9 @@ router.get("/today/autorizadas/:user", auth, async (req, res) => {
   const list = await Tarea.find({
     estado: "APROBADA",
     responsable: req.params.user,
-    anio: actualMoment.year(),
-    mes: 1 + actualMoment.month(),
-    dia: actualMoment.date(),
+    anioTarea: actualMoment.year(),
+    mesTarea: 1 + actualMoment.month(),
+    diaTarea: actualMoment.date(),
   }).sort({
     registro: -1,
   });
@@ -68,12 +68,16 @@ router.post("/", auth, async (req, res) => {
   let model = new Tarea(req.body);
   const registro = await TareaService.generateCode();
   const todayMoment = moment();
+  const fecha = moment(model.fecha);
 
   model.registro = registro;
   model.mes = 1 + todayMoment.month();
   model.anio = todayMoment.year();
-  model.dia = todayMoment.date();
+  model.diaTarea = fecha.date();
+  model.mesTarea = 1 + fecha.month();
+  model.anioTarea = fecha.year();
   model.codigo = registro + " - " + todayMoment.year();
+
   model = await model.save();
 
   await TareaService.sendMailToSave();
@@ -89,12 +93,16 @@ router.put("/autorizar/:id/:user", auth, async (req, res) => {
       .status(400)
       .send("No se encontró el usuario que debe autorizar la tarea");
 
+  const fecha = moment(req.body.fecha);
   const conditions = { _id: req.params.id };
   const updateField = {
     descripcion: req.body.descripcion,
     fecha: req.body.fecha,
     responsable: req.body.responsable,
     estado: "APROBADA",
+    diaTarea: fecha.date(),
+    mesTarea: 1 + fecha.month(),
+    anioTarea: fecha.year(),
     autoriza: usuario._id,
   };
   const model = await Tarea.updateOne(conditions, updateField);
