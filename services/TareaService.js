@@ -1,8 +1,20 @@
 const { sendMail, sendMailWithCC } = require("../util/mail");
 const { Tarea } = require("../models/tarea/tarea");
 const { Usuario } = require("../models/tarea/usuario");
+const { BitacoraEstado } = require("../models/tarea/bitacoraEstado");
 const UsuarioService = require("./UsuarioService");
 const moment = require("moment");
+
+async function saveBitacora(tarea, estadoAntiguo, estadoNuevo, user) {
+  const bitacoraModel = {
+    tarea: tarea,
+    estadoAntiguo: estadoAntiguo,
+    estadoNuevo: estadoNuevo,
+    usuario_crea: user,
+  };
+  let bitacora = new BitacoraEstado(bitacoraModel);
+  await bitacora.save();
+}
 
 async function sendMailToSave() {
   try {
@@ -51,3 +63,4 @@ async function generateCode() {
 exports.sendMailToSave = sendMailToSave;
 exports.generateCode = generateCode;
 exports.sendMailToOperador = sendMailToOperador;
+exports.saveBitacora = saveBitacora;

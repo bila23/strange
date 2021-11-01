@@ -129,8 +129,9 @@ router.put("/autorizar/:id/:user", auth, async (req, res) => {
   res.send(tareaReturn);
 });
 
-router.put("/denegar/:id", auth, async (req, res) => {
-  const conditions = { _id: req.params.id };
+router.put("/denegar/:id/:user", auth, async (req, res) => {
+  const { id, user } = req.params;
+  const conditions = { _id: id };
   const updateField = {
     estado: "DENEGADA",
   };
@@ -139,6 +140,9 @@ router.put("/denegar/:id", auth, async (req, res) => {
     return res
       .status(400)
       .send("No se encontró el registro que se desea actualizar");
+
+  await TareaService.saveBitacora(id, "INGRESADA", "DENEGADA", user);
+
   res.send(model);
 });
 
