@@ -14,6 +14,7 @@ router.get("/today/autorizadas/:user", auth, async (req, res) => {
     responsable: req.params.user,
     anio: actualMoment.year(),
     mes: 1 + actualMoment.month(),
+    dia: actualMoment.date(),
   }).sort({
     registro: -1,
   });
@@ -71,6 +72,7 @@ router.post("/", auth, async (req, res) => {
   model.registro = registro;
   model.mes = 1 + todayMoment.month();
   model.anio = todayMoment.year();
+  model.dia = todayMoment.date();
   model.codigo = registro + " - " + todayMoment.year();
   model = await model.save();
 
