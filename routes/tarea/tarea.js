@@ -23,7 +23,7 @@ router.get("/today/autorizadas/:user", auth, async (req, res) => {
 
 router.get("/autorizadas/:user", auth, async (req, res) => {
   const list = await Tarea.find({
-    estado: "APROBADA",
+    estado: { $in: ["APROBADA", "EN PROCESO", "FINALIZADA"] },
     responsable: req.params.user,
   }).sort({
     registro: -1,
