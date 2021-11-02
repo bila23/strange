@@ -10,7 +10,7 @@ const moment = require("moment");
 router.get("/today/autorizadas/:user", auth, async (req, res) => {
   const actualMoment = moment();
   const list = await Tarea.find({
-    estado: "APROBADA",
+    estado: { $in: ["APROBADA", "EN PROCESO"] },
     responsable: req.params.user,
     anioTarea: actualMoment.year(),
     mesTarea: 1 + actualMoment.month(),
@@ -125,6 +125,26 @@ router.put("/autorizar/:id/:user", auth, async (req, res) => {
   const tareaReturn = await Tarea.findById(req.params.id);
 
   await TareaService.sendMailToOperador(tareaReturn);
+
+  res.send(tareaReturn);
+});
+
+router.put("/estado/:id", auth, async (req, res) => {
+  const { id } = req.params;
+  const { estadoNuevo, estadoAntiguo, user } = req.body;
+  const conditions = { _id: id };
+  const updateField = {
+    estado: estadoNuevo,
+  };
+  const model = await Tarea.updateOne(conditions, updateField);
+  if (!model)
+    return res
+      .status(400)
+      .send("No se encontró el registro que se desea actualizar");
+
+  await TareaService.saveBitacora(id, estadoAntiguo, estadoNuevo, user);
+
+  const tareaReturn = await Tarea.findById(id);
 
   res.send(tareaReturn);
 });
