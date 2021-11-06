@@ -27,6 +27,7 @@ router.get("/autorizadas/:user", auth, async (req, res) => {
     responsable: req.params.user,
   }).sort({
     registro: -1,
+    anio: -1,
   });
   res.send(list);
 });
@@ -37,6 +38,7 @@ router.get("/ingresadas", auth, async (req, res) => {
     .populate("oficina")
     .sort({
       registro: -1,
+      anio: -1,
     });
   res.send(list);
 });
@@ -44,6 +46,7 @@ router.get("/ingresadas", auth, async (req, res) => {
 router.get("/oficina/:id", auth, async (req, res) => {
   const list = await Tarea.find({ oficina: req.params.id }).sort({
     registro: -1,
+    anio: -1,
   });
   res.send(list);
 });
@@ -51,6 +54,7 @@ router.get("/oficina/:id", auth, async (req, res) => {
 router.get("/responsable/:id", auth, async (req, res) => {
   const list = await Tarea.find({ responsable: req.params.id }).sort({
     registro: -1,
+    anio: -1,
   });
   res.send(list);
 });
