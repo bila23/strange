@@ -44,10 +44,12 @@ router.get("/ingresadas", auth, async (req, res) => {
 });
 
 router.get("/oficina/:id", auth, async (req, res) => {
-  const list = await Tarea.find({ oficina: req.params.id }).sort({
-    registro: -1,
-    anio: -1,
-  });
+  const list = await Tarea.find({ oficina: req.params.id })
+    .populate("responsable")
+    .sort({
+      registro: -1,
+      anio: -1,
+    });
   res.send(list);
 });
 
