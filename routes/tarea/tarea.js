@@ -86,6 +86,12 @@ router.post("/", auth, async (req, res) => {
 
   model = await model.save();
 
+  await TareaService.saveBitacora(
+    model._id,
+    "",
+    "INGRESADA",
+    req.body.usuario_crea
+  );
   await TareaService.sendMailToSave();
 
   res.send(model);
@@ -119,10 +125,10 @@ router.put("/autorizar/:id/:user", auth, async (req, res) => {
       .send("No se encontró el registro que se desea actualizar");
 
   const bitacoraModel = {
-    tarea: model._id,
+    tarea: req.params.id,
     estadoAntiguo: "INGRESADA",
     estadoNuevo: "APROBADA",
-    usuario_crea: req.params.user,
+    usuario_crea: usuario.user,
   };
 
   const bitacora = new BitacoraEstado(bitacoraModel);
