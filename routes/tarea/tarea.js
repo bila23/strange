@@ -86,13 +86,15 @@ router.post("/", auth, async (req, res) => {
 
   model = await model.save();
 
-  await TareaService.saveBitacora(
-    model._id,
-    "",
-    "INGRESADA",
-    req.body.usuario_crea
-  );
-  await TareaService.sendMailToSave();
+  const user = await Usuario.findOne({ user: model.usuario_crea });
+  let estado = "";
+
+  if (user.rol[0] === "JEFE OFICINA") {
+    estado = "INGRESADA";
+    await TareaService.sendMailToSave();
+  } else estado = "APROBADA";
+
+  await TareaService.saveBitacora(model._id, "", estado, req.body.usuario_crea);
 
   res.send(model);
 });
