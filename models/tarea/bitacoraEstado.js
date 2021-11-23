@@ -8,7 +8,7 @@ const bitacoraEstadoSchema = new mongoose.Schema({
   usuario_crea: String,
   fecha_crea: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   },
 });
 
