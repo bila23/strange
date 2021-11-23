@@ -92,7 +92,10 @@ router.post("/", auth, async (req, res) => {
   if (user.rol[0] === "JEFE OFICINA") {
     estado = "INGRESADA";
     await TareaService.sendMailToSave();
-  } else estado = "APROBADA";
+  } else {
+    estado = "APROBADA";
+    await TareaService.sendMailToOperador(model);
+  }
 
   await TareaService.saveBitacora(model._id, "", estado, req.body.usuario_crea);
 
