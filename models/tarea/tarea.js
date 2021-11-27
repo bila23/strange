@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const tareaSchema = new mongoose.Schema({
   descripcion: String,
   fecha: Date,
+  fechaFin: Date,
   oficina: [{ type: Schema.Types.ObjectId, ref: "oficina" }],
   responsable: [{ type: Schema.Types.ObjectId, ref: "usuario" }],
   autoriza: [{ type: Schema.Types.ObjectId, ref: "usuario" }],
@@ -32,6 +33,7 @@ function validateTarea(model) {
     oficina: Joi.any().optional(),
     descripcion: Joi.string().required(),
     fecha: Joi.date().required(),
+    fechaFin: Joi.date().required(),
     responsable: Joi.string().required(),
     autoriza: Joi.any().optional(),
     estado: Joi.string().required(),
