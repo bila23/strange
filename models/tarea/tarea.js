@@ -29,7 +29,7 @@ const Tarea = mongoose.model("tarea", tareaSchema);
 
 function validateTarea(model) {
   const schema = Joi.object({
-    oficina: Joi.string().required(),
+    oficina: Joi.any().optional(),
     descripcion: Joi.string().required(),
     fecha: Joi.date().required(),
     responsable: Joi.string().required(),

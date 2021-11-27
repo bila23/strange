@@ -75,7 +75,9 @@ router.post("/", auth, async (req, res) => {
   const registro = await TareaService.generateCode();
   const todayMoment = moment();
   const fecha = moment(model.fecha);
+  const userResponsable = await Usuario.findById(req.body.responsable);
 
+  model.oficina = userResponsable.oficina[0];
   model.registro = registro;
   model.mes = 1 + todayMoment.month();
   model.anio = todayMoment.year();
