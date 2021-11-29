@@ -43,6 +43,18 @@ router.get("/ingresadas", auth, async (req, res) => {
   res.send(list);
 });
 
+router.get("/indicadores/:user/:rol/:oficina", auth, async (req, res) => {
+  const { user, rol, oficina } = req.params;
+  let list = [];
+
+  if (rol === "JEFE OFICINA" || rol === "ADMIN" || rol === "GERENTE")
+    list = await TareaService.findIndicadoresJefeOficina(oficina);
+  else if (rol === "OPERADOR")
+    list = await TareaService.findIndicadoresOperador(user);
+
+  res.send(list);
+});
+
 router.get("/oficina/:id", auth, async (req, res) => {
   const list = await Tarea.find({ oficina: req.params.id })
     .populate("responsable")

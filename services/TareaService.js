@@ -1,9 +1,44 @@
 const { sendMail, sendMailWithCC } = require("../util/mail");
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 const { Tarea } = require("../models/tarea/tarea");
 const { Usuario } = require("../models/tarea/usuario");
 const { BitacoraEstado } = require("../models/tarea/bitacoraEstado");
 const UsuarioService = require("./UsuarioService");
 const moment = require("moment");
+
+async function findIndicadoresOperador(user) {
+  const tareas = await Tarea.aggregate([
+    { $sort: { estado: 1 } },
+    {
+      $group: {
+        _id: { estado: "$estado" },
+        valor: { $sum: 1 },
+      },
+    },
+    {
+      $match: { responsable: mongoose.Types.ObjectId(user) },
+    },
+  ]).exec();
+
+  return tareas;
+}
+
+async function findIndicadoresJefeOficina(oficina) {
+  const tareas = await Tarea.aggregate([
+    {
+      $match: { oficina: mongoose.Types.ObjectId(oficina) },
+    },
+    { $sort: { estado: 1 } },
+    {
+      $group: {
+        _id: { estado: "$estado" },
+        valor: { $sum: 1 },
+      },
+    },
+  ]).exec();
+  return tareas;
+}
 
 async function saveBitacora(tarea, estadoAntiguo, estadoNuevo, user) {
   const bitacoraModel = {
@@ -64,3 +99,5 @@ exports.sendMailToSave = sendMailToSave;
 exports.generateCode = generateCode;
 exports.sendMailToOperador = sendMailToOperador;
 exports.saveBitacora = saveBitacora;
+exports.findIndicadoresJefeOficina = findIndicadoresJefeOficina;
+exports.findIndicadoresOperador = findIndicadoresOperador;
