@@ -2,12 +2,16 @@ const mongoose = require("mongoose");
 const Joi = require("joi");
 const Schema = mongoose.Schema;
 
+const responsableSchema = {
+  usuario: [{ type: Schema.Types.ObjectId, ref: "usuario" }],
+};
+
 const tareaSchema = new mongoose.Schema({
   descripcion: String,
   fecha: Date,
   fechaFin: Date,
   oficina: [{ type: Schema.Types.ObjectId, ref: "oficina" }],
-  responsable: [{ type: Schema.Types.ObjectId, ref: "usuario" }],
+  responsable: [responsableSchema],
   autoriza: [{ type: Schema.Types.ObjectId, ref: "usuario" }],
   estado: String,
   mes: Number,
@@ -34,7 +38,7 @@ function validateTarea(model) {
     descripcion: Joi.string().required(),
     fecha: Joi.date().required(),
     fechaFin: Joi.date().required(),
-    responsable: Joi.string().required(),
+    responsable: Joi.array().required(),
     autoriza: Joi.any().optional(),
     estado: Joi.string().required(),
     mes: Joi.any().optional(),

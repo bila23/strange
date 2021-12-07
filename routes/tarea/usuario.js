@@ -10,14 +10,16 @@ router.get("/rol/:rol/oficina/:oficina", auth, async (req, res) => {
   let list = [];
 
   if (rol === "ADMIN" || rol === "GERENTE")
-    list = await Usuario.find({ activo: true }).sort({
+    list = await Usuario.find({ activo: true }).populate("oficina").sort({
       user: 1,
     });
 
   if (rol === "JEFE OFICINA")
-    list = await Usuario.find({ activo: true, oficina: oficina }).sort({
-      user: 1,
-    });
+    list = await Usuario.find({ activo: true, oficina: oficina })
+      .populate("oficina")
+      .sort({
+        user: 1,
+      });
 
   res.send(list);
 });
