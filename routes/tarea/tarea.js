@@ -9,18 +9,20 @@ const { BitacoraEstado } = require("../../models/tarea/bitacoraEstado");
 const { Usuario } = require("../../models/tarea/usuario");
 
 router.get("/today/autorizadas/:user", auth, async (req, res) => {
-  const actualMoment = moment();
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
   const list = await Tarea.find({
     estado: { $in: ["APROBADA", "EN PROCESO"] },
     "responsable._idUsuario": {
       $in: [mongoose.Types.ObjectId(req.params.user)],
     },
-    anioTarea: actualMoment.year(),
-    mesTarea: 1 + actualMoment.month(),
-    diaTarea: actualMoment.date(),
+    fecha: { $gte: today },
+    fechaFin: { $lte: today },
   }).sort({
     registro: -1,
   });
+
   res.send(list);
 });
 
