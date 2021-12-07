@@ -22,6 +22,7 @@ const tareaSchema = new mongoose.Schema({
   mesTarea: Number,
   anioTarea: Number,
   codigo: String,
+  dias: Array,
   horaInicio: Date,
   horaFin: Date,
   registro: Number,
@@ -51,6 +52,7 @@ function validateTarea(model) {
     anioTarea: Joi.any().optional(),
     anio: Joi.any().optional(),
     codigo: Joi.any().optional(),
+    dias: Joi.any().optional(),
     registro: Joi.any().optional(),
     usuario_crea: Joi.string().required(),
   });
