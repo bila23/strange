@@ -3,14 +3,16 @@ const Joi = require("joi");
 const Schema = mongoose.Schema;
 
 const responsableSchema = {
-  usuario: [{ type: Schema.Types.ObjectId, ref: "usuario" }],
+  _idUsuario: String,
+  nombre: String,
+  oficina: String,
+  oficinaId: String,
 };
 
 const tareaSchema = new mongoose.Schema({
   descripcion: String,
   fecha: Date,
   fechaFin: Date,
-  oficina: [{ type: Schema.Types.ObjectId, ref: "oficina" }],
   responsable: [responsableSchema],
   autoriza: [{ type: Schema.Types.ObjectId, ref: "usuario" }],
   estado: String,

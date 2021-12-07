@@ -1,18 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
-const { Tarea, validateTarea } = require("../../models/tarea/tarea");
-const { BitacoraEstado } = require("../../models/tarea/bitacoraEstado");
-const { Usuario } = require("../../models/tarea/usuario");
 const TareaService = require("../../services/TareaService");
 const moment = require("moment");
 const mongoose = require("mongoose");
+const { Tarea, validateTarea } = require("../../models/tarea/tarea");
+const { BitacoraEstado } = require("../../models/tarea/bitacoraEstado");
+const { Usuario } = require("../../models/tarea/usuario");
 
 router.get("/today/autorizadas/:user", auth, async (req, res) => {
   const actualMoment = moment();
   const list = await Tarea.find({
     estado: { $in: ["APROBADA", "EN PROCESO"] },
-    responsable: { $in: [mongoose.Types.ObjectId(req.params.user)] },
+    "responsable._idUsuario": {
+      $in: [mongoose.Types.ObjectId(req.params.user)],
+    },
     anioTarea: actualMoment.year(),
     mesTarea: 1 + actualMoment.month(),
     diaTarea: actualMoment.date(),
@@ -25,7 +27,9 @@ router.get("/today/autorizadas/:user", auth, async (req, res) => {
 router.get("/autorizadas/:user", auth, async (req, res) => {
   const list = await Tarea.find({
     estado: { $in: ["APROBADA", "EN PROCESO", "FINALIZADA"] },
-    responsable: { $in: [mongoose.Types.ObjectId(req.params.user)] },
+    "responsable._idUsuario": {
+      $in: [mongoose.Types.ObjectId(req.params.user)],
+    },
   }).sort({
     registro: -1,
     anio: -1,
@@ -34,13 +38,10 @@ router.get("/autorizadas/:user", auth, async (req, res) => {
 });
 
 router.get("/ingresadas", auth, async (req, res) => {
-  const list = await Tarea.find({ estado: "INGRESADA" })
-    .populate("responsable")
-    .populate("oficina")
-    .sort({
-      registro: -1,
-      anio: -1,
-    });
+  const list = await Tarea.find({ estado: "INGRESADA" }).sort({
+    registro: -1,
+    anio: -1,
+  });
   res.send(list);
 });
 
@@ -57,18 +58,18 @@ router.get("/indicadores/:user/:rol/:oficina", auth, async (req, res) => {
 });
 
 router.get("/oficina/:id", auth, async (req, res) => {
-  const list = await Tarea.find({ oficina: req.params.id })
-    .populate("responsable")
-    .sort({
-      registro: -1,
-      anio: -1,
-    });
+  const list = await Tarea.find({
+    "responsable.oficinaId": { $in: [req.params.id] },
+  }).sort({
+    registro: -1,
+    anio: -1,
+  });
   res.send(list);
 });
 
 router.get("/responsable/:id", auth, async (req, res) => {
   const list = await Tarea.find({
-    responsable: { $in: [mongoose.Types.ObjectId(req.params.id)] },
+    "responsable._idUsuario": { $in: [mongoose.Types.ObjectId(req.params.id)] },
   }).sort({
     registro: -1,
     anio: -1,
@@ -90,9 +91,7 @@ router.post("/", auth, async (req, res) => {
   const registro = await TareaService.generateCode();
   const todayMoment = moment();
   const fecha = moment(model.fecha);
-  const userResponsable = await Usuario.findById(req.body.responsable);
 
-  model.oficina = userResponsable.oficina[0];
   model.registro = registro;
   model.mes = 1 + todayMoment.month();
   model.anio = todayMoment.year();

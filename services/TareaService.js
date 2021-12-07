@@ -16,7 +16,9 @@ async function findIndicadoresOperador(user) {
       },
     },
     {
-      $match: { responsable: { $in: [mongoose.Types.ObjectId(req.user)] } },
+      $match: {
+        "responsable._idUsuario": { $in: [mongoose.Types.ObjectId(user)] },
+      },
     },
   ]).exec();
 
@@ -26,7 +28,7 @@ async function findIndicadoresOperador(user) {
 async function findIndicadoresJefeOficina(oficina) {
   const tareas = await Tarea.aggregate([
     {
-      $match: { oficina: mongoose.Types.ObjectId(oficina) },
+      $match: { "responsable.oficinaId": { $in: [oficina] } },
     },
     { $sort: { estado: 1 } },
     {
