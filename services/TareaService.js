@@ -1,6 +1,5 @@
 const { sendMail, sendMailWithCC } = require("../util/mail");
 const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
 const { Tarea } = require("../models/tarea/tarea");
 const { Usuario } = require("../models/tarea/usuario");
 const { BitacoraEstado } = require("../models/tarea/bitacoraEstado");
@@ -17,7 +16,7 @@ async function findIndicadoresOperador(user) {
       },
     },
     {
-      $match: { responsable: mongoose.Types.ObjectId(user) },
+      $match: { responsable: { $in: [mongoose.Types.ObjectId(req.user)] } },
     },
   ]).exec();
 

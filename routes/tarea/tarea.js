@@ -6,12 +6,13 @@ const { BitacoraEstado } = require("../../models/tarea/bitacoraEstado");
 const { Usuario } = require("../../models/tarea/usuario");
 const TareaService = require("../../services/TareaService");
 const moment = require("moment");
+const mongoose = require("mongoose");
 
 router.get("/today/autorizadas/:user", auth, async (req, res) => {
   const actualMoment = moment();
   const list = await Tarea.find({
     estado: { $in: ["APROBADA", "EN PROCESO"] },
-    responsable: req.params.user,
+    responsable: { $in: [mongoose.Types.ObjectId(req.params.user)] },
     anioTarea: actualMoment.year(),
     mesTarea: 1 + actualMoment.month(),
     diaTarea: actualMoment.date(),
@@ -24,7 +25,7 @@ router.get("/today/autorizadas/:user", auth, async (req, res) => {
 router.get("/autorizadas/:user", auth, async (req, res) => {
   const list = await Tarea.find({
     estado: { $in: ["APROBADA", "EN PROCESO", "FINALIZADA"] },
-    responsable: req.params.user,
+    responsable: { $in: [mongoose.Types.ObjectId(req.params.user)] },
   }).sort({
     registro: -1,
     anio: -1,
@@ -66,7 +67,9 @@ router.get("/oficina/:id", auth, async (req, res) => {
 });
 
 router.get("/responsable/:id", auth, async (req, res) => {
-  const list = await Tarea.find({ responsable: req.params.id }).sort({
+  const list = await Tarea.find({
+    responsable: { $in: [mongoose.Types.ObjectId(req.params.id)] },
+  }).sort({
     registro: -1,
     anio: -1,
   });
@@ -202,7 +205,7 @@ router.put("/:id", auth, async (req, res) => {
   const updateField = {
     descripcion: req.body.descripcion,
     fecha: req.body.fecha,
-    responsable: req.body.responsable,
+    responsable: { $in: [mongoose.Types.ObjectId(req.body.responsable)] },
     estado: req.body.estado,
   };
   const model = await Tarea.updateOne(conditions, updateField);
