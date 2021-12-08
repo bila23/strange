@@ -7,9 +7,12 @@ const { Usuario } = require("../models/tarea/usuario");
 const { BitacoraEstado } = require("../models/tarea/bitacoraEstado");
 
 async function saveInDays(model, estado) {
-  const diff = Math.abs(model.fechaFin - model.fecha) / 86400000;
+  const ini = moment(model.fecha).toDate();
+  const end = moment(model.fechaFin).toDate();
+
+  const diff = Math.abs(end - ini) / 86400000;
   const fecha = model.fecha;
-  const newModel = { ...model._doc };
+  const newModel = { ...model };
 
   for (let i = 0; i <= diff; i++) {
     const newFecha = moment(fecha).add(i, "days").toDate();
@@ -38,7 +41,7 @@ async function saveTarea(tarea, estado) {
 
   await model.save();
 
-  await saveBitacora(model._id, "", estado, model.body.usuario_crea);
+  await saveBitacora(model._id, "", estado, model.usuario_crea);
 }
 
 async function findIndicadoresOperador(user) {
