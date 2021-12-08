@@ -1,10 +1,45 @@
-const { sendMail, sendMailWithCC } = require("../util/mail");
 const mongoose = require("mongoose");
+const UsuarioService = require("./UsuarioService");
+const moment = require("moment");
+const { sendMail, sendMailWithCC } = require("../util/mail");
 const { Tarea } = require("../models/tarea/tarea");
 const { Usuario } = require("../models/tarea/usuario");
 const { BitacoraEstado } = require("../models/tarea/bitacoraEstado");
-const UsuarioService = require("./UsuarioService");
-const moment = require("moment");
+
+async function saveInDays(model, estado) {
+  const diff = Math.abs(model.fechaFin - model.fecha) / 86400000;
+  const fecha = model.fecha;
+  const newModel = { ...model._doc };
+
+  for (let i = 0; i <= diff; i++) {
+    const newFecha = moment(fecha).add(i, "days").toDate();
+
+    if (model.dias.includes(newFecha.getDay())) {
+      newModel.fecha = newFecha;
+      newModel.fechaFin = newFecha;
+      await saveTarea(newModel, estado);
+    }
+  }
+}
+
+async function saveTarea(tarea, estado) {
+  let model = new Tarea(tarea);
+  const registro = await generateCode();
+  const todayMoment = moment();
+  const fecha = moment(model.fecha);
+
+  model.registro = registro;
+  model.mes = 1 + todayMoment.month();
+  model.anio = todayMoment.year();
+  model.diaTarea = fecha.date();
+  model.mesTarea = 1 + fecha.month();
+  model.anioTarea = fecha.year();
+  model.codigo = registro + " - " + todayMoment.year();
+
+  await model.save();
+
+  await saveBitacora(model._id, "", estado, model.body.usuario_crea);
+}
 
 async function findIndicadoresOperador(user) {
   const tareas = await Tarea.aggregate([
@@ -102,3 +137,5 @@ exports.sendMailToOperador = sendMailToOperador;
 exports.saveBitacora = saveBitacora;
 exports.findIndicadoresJefeOficina = findIndicadoresJefeOficina;
 exports.findIndicadoresOperador = findIndicadoresOperador;
+exports.saveInDays = saveInDays;
+exports.saveTarea = saveTarea;

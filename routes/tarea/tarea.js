@@ -86,36 +86,24 @@ router.get("/:id", auth, async (req, res) => {
 });
 
 router.post("/", auth, async (req, res) => {
-  const { error } = validateTarea(req.body);
+  let model = req.body;
+
+  const { error } = validateTarea(model);
   if (error) return res.status(400).send(error.details[0].message);
 
-  let model = new Tarea(req.body);
-  const registro = await TareaService.generateCode();
-  const todayMoment = moment();
-  const fecha = moment(model.fecha);
-
-  model.registro = registro;
-  model.mes = 1 + todayMoment.month();
-  model.anio = todayMoment.year();
-  model.diaTarea = fecha.date();
-  model.mesTarea = 1 + fecha.month();
-  model.anioTarea = fecha.year();
-  model.codigo = registro + " - " + todayMoment.year();
-
-  model = await model.save();
-
+  let estado;
   const user = await Usuario.findOne({ user: model.usuario_crea });
-  let estado = "";
+  const rol = user.rol[0];
 
-  if (user.rol[0] === "JEFE OFICINA") {
-    estado = "INGRESADA";
-    await TareaService.sendMailToSave();
-  } else {
-    estado = "APROBADA";
-    await TareaService.sendMailToOperador(model);
-  }
+  if (rol === "JEFE OFICINA") estado = "INGRESADA";
+  else estado = "APROBADA";
 
-  await TareaService.saveBitacora(model._id, "", estado, req.body.usuario_crea);
+  if (model.dias.length === 0)
+    model = await TareaService.saveTarea(model, estado);
+  else await TareaService.saveInDays(model, estado);
+
+  if (rol === "JEFE OFICINA") await TareaService.sendMailToSave();
+  else await TareaService.sendMailToOperador(model);
 
   res.send(model);
 });
