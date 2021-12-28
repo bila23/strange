@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
+const TareaService = require("../../services/TareaService");
+const moment = require("moment");
+const mongoose = require("mongoose");
 const { Tarea, validateTarea } = require("../../models/tarea/tarea");
 const { BitacoraEstado } = require("../../models/tarea/bitacoraEstado");
 const { Usuario } = require("../../models/tarea/usuario");
-const TareaService = require("../../services/TareaService");
-const moment = require("moment");
 
 router.get("/pendientes/:user", auth, async (req, res) => {
   const list = await Tarea.find({
@@ -19,23 +20,29 @@ router.get("/pendientes/:user", auth, async (req, res) => {
 });
 
 router.get("/today/autorizadas/:user", auth, async (req, res) => {
-  const actualMoment = moment();
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
   const list = await Tarea.find({
     estado: { $in: ["APROBADA", "EN PROCESO"] },
-    responsable: req.params.user,
-    anioTarea: actualMoment.year(),
-    mesTarea: 1 + actualMoment.month(),
-    diaTarea: actualMoment.date(),
+    "responsable._idUsuario": {
+      $in: [mongoose.Types.ObjectId(req.params.user)],
+    },
+    fecha: { $gte: today },
+    fechaFin: { $lte: today },
   }).sort({
     registro: -1,
   });
+
   res.send(list);
 });
 
 router.get("/autorizadas/:user", auth, async (req, res) => {
   const list = await Tarea.find({
     estado: { $in: ["APROBADA", "EN PROCESO", "FINALIZADA"] },
-    responsable: req.params.user,
+    "responsable._idUsuario": {
+      $in: [mongoose.Types.ObjectId(req.params.user)],
+    },
   }).sort({
     registro: -1,
     anio: -1,
@@ -44,13 +51,10 @@ router.get("/autorizadas/:user", auth, async (req, res) => {
 });
 
 router.get("/ingresadas", auth, async (req, res) => {
-  const list = await Tarea.find({ estado: "INGRESADA" })
-    .populate("responsable")
-    .populate("oficina")
-    .sort({
-      registro: -1,
-      anio: -1,
-    });
+  const list = await Tarea.find({ estado: "INGRESADA" }).sort({
+    registro: -1,
+    anio: -1,
+  });
   res.send(list);
 });
 
@@ -67,17 +71,19 @@ router.get("/indicadores/:user/:rol/:oficina", auth, async (req, res) => {
 });
 
 router.get("/oficina/:id", auth, async (req, res) => {
-  const list = await Tarea.find({ oficina: req.params.id })
-    .populate("responsable")
-    .sort({
-      registro: -1,
-      anio: -1,
-    });
+  const list = await Tarea.find({
+    "responsable.oficinaId": { $in: [req.params.id] },
+  }).sort({
+    registro: -1,
+    anio: -1,
+  });
   res.send(list);
 });
 
 router.get("/responsable/:id", auth, async (req, res) => {
-  const list = await Tarea.find({ responsable: req.params.id }).sort({
+  const list = await Tarea.find({
+    "responsable._idUsuario": { $in: [mongoose.Types.ObjectId(req.params.id)] },
+  }).sort({
     registro: -1,
     anio: -1,
   });
@@ -91,38 +97,24 @@ router.get("/:id", auth, async (req, res) => {
 });
 
 router.post("/", auth, async (req, res) => {
-  const { error } = validateTarea(req.body);
+  let model = req.body;
+
+  const { error } = validateTarea(model);
   if (error) return res.status(400).send(error.details[0].message);
 
-  let model = new Tarea(req.body);
-  const registro = await TareaService.generateCode();
-  const todayMoment = moment();
-  const fecha = moment(model.fecha);
-  const userResponsable = await Usuario.findById(req.body.responsable);
-
-  model.oficina = userResponsable.oficina[0];
-  model.registro = registro;
-  model.mes = 1 + todayMoment.month();
-  model.anio = todayMoment.year();
-  model.diaTarea = fecha.date();
-  model.mesTarea = 1 + fecha.month();
-  model.anioTarea = fecha.year();
-  model.codigo = registro + " - " + todayMoment.year();
-
-  model = await model.save();
-
+  let estado;
   const user = await Usuario.findOne({ user: model.usuario_crea });
-  let estado = "";
+  const rol = user.rol[0];
 
-  if (user.rol[0] === "JEFE OFICINA") {
-    estado = "INGRESADA";
-    await TareaService.sendMailToSave();
-  } else {
-    estado = "APROBADA";
-    await TareaService.sendMailToOperador(model);
-  }
+  if (rol === "JEFE OFICINA") estado = "INGRESADA";
+  else estado = "APROBADA";
 
-  await TareaService.saveBitacora(model._id, "", estado, req.body.usuario_crea);
+  if (model.dias.length === 0)
+    model = await TareaService.saveTarea(model, estado);
+  else await TareaService.saveInDays(model, estado);
+
+  if (rol === "JEFE OFICINA") await TareaService.sendMailToSave();
+  else await TareaService.sendMailToOperador(model);
 
   res.send(model);
 });
@@ -213,7 +205,7 @@ router.put("/:id", auth, async (req, res) => {
   const updateField = {
     descripcion: req.body.descripcion,
     fecha: req.body.fecha,
-    responsable: req.body.responsable,
+    responsable: { $in: [mongoose.Types.ObjectId(req.body.responsable)] },
     estado: req.body.estado,
   };
   const model = await Tarea.updateOne(conditions, updateField);

@@ -1,11 +1,48 @@
-const { sendMail, sendMailWithCC } = require("../util/mail");
 const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
+const UsuarioService = require("./UsuarioService");
+const moment = require("moment");
+const { sendMail, sendMailWithCC } = require("../util/mail");
 const { Tarea } = require("../models/tarea/tarea");
 const { Usuario } = require("../models/tarea/usuario");
 const { BitacoraEstado } = require("../models/tarea/bitacoraEstado");
-const UsuarioService = require("./UsuarioService");
-const moment = require("moment");
+
+async function saveInDays(model, estado) {
+  const ini = moment(model.fecha).toDate();
+  const end = moment(model.fechaFin).toDate();
+
+  const diff = Math.abs(end - ini) / 86400000;
+  const fecha = model.fecha;
+  const newModel = { ...model };
+
+  for (let i = 0; i <= diff; i++) {
+    const newFecha = moment(fecha).add(i, "days").toDate();
+
+    if (model.dias.includes(newFecha.getDay())) {
+      newModel.fecha = newFecha;
+      newModel.fechaFin = newFecha;
+      await saveTarea(newModel, estado);
+    }
+  }
+}
+
+async function saveTarea(tarea, estado) {
+  let model = new Tarea(tarea);
+  const registro = await generateCode();
+  const todayMoment = moment();
+  const fecha = moment(model.fecha);
+
+  model.registro = registro;
+  model.mes = 1 + todayMoment.month();
+  model.anio = todayMoment.year();
+  model.diaTarea = fecha.date();
+  model.mesTarea = 1 + fecha.month();
+  model.anioTarea = fecha.year();
+  model.codigo = registro + " - " + todayMoment.year();
+
+  await model.save();
+
+  await saveBitacora(model._id, "", estado, model.usuario_crea);
+}
 
 async function findIndicadoresOperador(user) {
   const tareas = await Tarea.aggregate([
@@ -17,7 +54,9 @@ async function findIndicadoresOperador(user) {
       },
     },
     {
-      $match: { responsable: mongoose.Types.ObjectId(user) },
+      $match: {
+        "responsable._idUsuario": { $in: [mongoose.Types.ObjectId(user)] },
+      },
     },
   ]).exec();
 
@@ -27,7 +66,7 @@ async function findIndicadoresOperador(user) {
 async function findIndicadoresJefeOficina(oficina) {
   const tareas = await Tarea.aggregate([
     {
-      $match: { oficina: mongoose.Types.ObjectId(oficina) },
+      $match: { "responsable.oficinaId": { $in: [oficina] } },
     },
     { $sort: { estado: 1 } },
     {
@@ -101,3 +140,5 @@ exports.sendMailToOperador = sendMailToOperador;
 exports.saveBitacora = saveBitacora;
 exports.findIndicadoresJefeOficina = findIndicadoresJefeOficina;
 exports.findIndicadoresOperador = findIndicadoresOperador;
+exports.saveInDays = saveInDays;
+exports.saveTarea = saveTarea;
