@@ -11,7 +11,7 @@ const { Usuario } = require("../../models/tarea/usuario");
 router.get("/pendientes/:user", auth, async (req, res) => {
   const list = await Tarea.find({
     estado: { $in: ["APROBADA", "EN PROCESO", "INGRESADA"] },
-    responsable: req.params.user,
+    "responsable._idUsuario": mongoose.Types.ObjectId(req.params.user),
     fecha: { $lt: new Date() },
   }).sort({
     registro: -1,
