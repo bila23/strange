@@ -7,6 +7,17 @@ const { Usuario } = require("../../models/tarea/usuario");
 const TareaService = require("../../services/TareaService");
 const moment = require("moment");
 
+router.get("/pendientes/:user", auth, async (req, res) => {
+  const list = await Tarea.find({
+    estado: { $in: ["APROBADA", "EN PROCESO", "INGRESADA"] },
+    responsable: req.params.user,
+    fecha: { $lt: new Date() },
+  }).sort({
+    registro: -1,
+  });
+  res.send(list);
+});
+
 router.get("/today/autorizadas/:user", auth, async (req, res) => {
   const actualMoment = moment();
   const list = await Tarea.find({
