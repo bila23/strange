@@ -26,6 +26,7 @@ const tareaSchema = new mongoose.Schema({
   horaInicio: Date,
   horaFin: Date,
   registro: Number,
+  grupal: Boolean,
   usuario_crea: String,
   fecha_crea: {
     type: Date,
@@ -50,6 +51,7 @@ function validateTarea(model) {
     diaTarea: Joi.any().optional(),
     mesTarea: Joi.any().optional(),
     anioTarea: Joi.any().optional(),
+    grupal: Joi.any().optional(),
     anio: Joi.any().optional(),
     codigo: Joi.any().optional(),
     dias: Joi.any().optional(),
