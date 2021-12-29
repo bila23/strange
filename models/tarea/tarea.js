@@ -26,7 +26,7 @@ const tareaSchema = new mongoose.Schema({
   horaInicio: Date,
   horaFin: Date,
   registro: Number,
-  grupal: Boolean,
+  grupal: String,
   usuario_crea: String,
   fecha_crea: {
     type: Date,
