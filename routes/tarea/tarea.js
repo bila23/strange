@@ -132,6 +132,10 @@ router.put("/autorizar/:id/:user", auth, async (req, res) => {
   const updateField = {
     descripcion: req.body.descripcion,
     fecha: req.body.fecha,
+    fechaFin: req.body.fechaFin,
+    horaInicio: req.body.horaInicio,
+    horaFin: req.body.horaFin,
+    dias: dias,
     responsable: req.body.responsable,
     estado: "APROBADA",
     diaTarea: fecha.date(),
