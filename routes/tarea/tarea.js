@@ -102,19 +102,18 @@ router.post("/", auth, async (req, res) => {
   const { error } = validateTarea(model);
   if (error) return res.status(400).send(error.details[0].message);
 
-  let estado;
   const user = await Usuario.findOne({ user: model.usuario_crea });
   const rol = user.rol[0];
 
-  if (rol === "JEFE OFICINA") estado = "INGRESADA";
-  else estado = "APROBADA";
+  if (rol === "JEFE OFICINA") {
+    model = await TareaService.saveTarea(model, "INGRESADA");
+    await TareaService.sendMailToSave();
+  } else {
+    if (model.dias.length > 0) await TareaService.saveInDays(model, "APROBADA");
+    else model = await TareaService.saveTarea(model, "APROBADA");
 
-  if (model.dias.length === 0)
-    model = await TareaService.saveTarea(model, estado);
-  else await TareaService.saveInDays(model, estado);
-
-  if (rol === "JEFE OFICINA") await TareaService.sendMailToSave();
-  else await TareaService.sendMailToOperador(model);
+    await TareaService.sendMailToOperador(model);
+  }
 
   res.send(model);
 });
@@ -135,7 +134,7 @@ router.put("/autorizar/:id/:user", auth, async (req, res) => {
     fechaFin: req.body.fechaFin,
     horaInicio: req.body.horaInicio,
     horaFin: req.body.horaFin,
-    dias: dias,
+    dias: req.body.dias,
     responsable: req.body.responsable,
     estado: "APROBADA",
     diaTarea: fecha.date(),
@@ -144,6 +143,10 @@ router.put("/autorizar/:id/:user", auth, async (req, res) => {
     autoriza: usuario._id,
   };
   const model = await Tarea.updateOne(conditions, updateField);
+
+  let modelBody = req.body;
+  if (modelBody.dias.length > 0)
+    await TareaService.saveInDays(modelBody, "APROBADA");
 
   if (!model)
     return res
