@@ -12,7 +12,8 @@ async function saveInDays(model, estado) {
 
   const diff = Math.abs(end - ini) / 86400000;
   const fecha = model.fecha;
-  const newModel = { ...model };
+  let newModel = { ...model };
+  delete newModel._id;
 
   for (let i = 1; i <= diff; i++) {
     const newFecha = moment(fecha).add(i, "days").toDate();
@@ -37,6 +38,7 @@ async function saveTarea(tarea, estado) {
   model.diaTarea = fecha.date();
   model.mesTarea = 1 + fecha.month();
   model.anioTarea = fecha.year();
+  model.estado = estado;
   model.codigo = registro + " - " + todayMoment.year();
 
   await model.save();
