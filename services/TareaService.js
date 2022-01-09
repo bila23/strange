@@ -13,6 +13,11 @@ async function saveInDays(model, estado) {
   const diff = Math.abs(end - ini) / 86400000;
   const fecha = model.fecha;
   let newModel = { ...model };
+
+  const id_to_delete = newModel._id;
+  await Tarea.findByIdAndDelete(id_to_delete);
+  await BitacoraEstado.deleteMany({ tarea: id_to_delete });
+
   delete newModel._id;
 
   for (let i = 1; i <= diff; i++) {
