@@ -20,7 +20,7 @@ async function saveInDays(model, estado) {
 
   delete newModel._id;
 
-  for (let i = 1; i <= diff; i++) {
+  for (let i = 0; i <= diff; i++) {
     const newFecha = moment(fecha).add(i, "days").toDate();
 
     if (model.dias.includes(newFecha.getDay())) {
