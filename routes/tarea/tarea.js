@@ -21,19 +21,18 @@ router.get("/pendientes/:user", auth, async (req, res) => {
 
 router.get("/today/autorizadas/:user", auth, async (req, res) => {
   const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   const list = await Tarea.find({
     estado: { $in: ["APROBADA", "EN PROCESO"] },
     "responsable._idUsuario": {
       $in: [mongoose.Types.ObjectId(req.params.user)],
     },
-    fecha: { $gte: today },
-    fechaFin: { $lte: today },
+    anio: now.getFullYear(),
+    mes: now.getMonth() + 1,
+    diaTarea: now.getDate(),
   }).sort({
     registro: -1,
   });
-
   res.send(list);
 });
 
