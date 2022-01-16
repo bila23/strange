@@ -8,13 +8,13 @@ const { Tarea } = require("../../models/tarea/tarea");
 router.post("/", auth, async (req, res) => {
   let model = new Justificacion(req.body);
   model = await model.save();
-  await updateTarea(req.body.tarea, req.body.fecha);
+  await updateTarea(req.body.tarea, req.body.nuevaFecha);
   res.send(model);
 });
 
 async function updateTarea(tareaId, newDate) {
   const tarea = await Tarea.findById(tareaId);
-  let daysDiff = diffDays(tarea.fechaFin, tarea.fecha);
+  let daysDiff = diffDays(tarea.fecha, tarea.fechaFin);
   const newEndDate = moment(newDate).add(daysDiff, "days").toDate();
   const fechaMoment = moment(newDate);
 
