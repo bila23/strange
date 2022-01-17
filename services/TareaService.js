@@ -161,3 +161,4 @@ exports.findIndicadoresJefeOficina = findIndicadoresJefeOficina;
 exports.findIndicadoresOperador = findIndicadoresOperador;
 exports.saveInDays = saveInDays;
 exports.saveTarea = saveTarea;
+exports.update_pro_aprob_to_pend = update_pro_aprob_to_pend;
