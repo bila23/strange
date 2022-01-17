@@ -7,8 +7,7 @@ const { Usuario } = require("../models/tarea/usuario");
 const { BitacoraEstado } = require("../models/tarea/bitacoraEstado");
 
 async function update_pro_aprob_to_pend() {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+  const today = moment().startOf("day");
   await Tarea.updateMany(
     {
       estado: { $in: ["APROBADA", "EN PROCESO"] },
