@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const auth = require("../../middleware/auth");
 const config = require("config");
+const mongoose = require("mongoose");
 const { Usuario, validateUser } = require("../../models/tarea/usuario");
 
 router.get("/rol/:rol/oficina/:oficina", auth, async (req, res) => {
@@ -31,15 +32,15 @@ router.get("/activos", auth, async (req, res) => {
   res.send(list);
 });
 
-router.get("/oficina/:oficina", auth, async (req, res) => {
+router.get("/operadores/oficina/:oficina", auth, async (req, res) => {
   const roles = ["OPERADOR"];
   const list = await Usuario.find({
     rol: roles,
-    oficina: req.params.oficina,
+    oficina: [mongoose.Types.ObjectId(req.params.oficina)],
   }).sort({
     user: 1,
   });
-  res.status(200).send(list);
+  res.send(list);
 });
 
 router.get("/operador", auth, async (req, res) => {
