@@ -79,6 +79,32 @@ router.get("/oficina/:id", auth, async (req, res) => {
   res.send(list);
 });
 
+router.post("/fecha/oficina/:id", auth, async (req, res) => {
+  const { ini, end } = req.body;
+  const list = await Tarea.find({
+    "responsable.oficinaId": { $in: [req.params.id] },
+    fecha: { $gte: ini },
+    fechaFin: { $lte: end },
+  }).sort({
+    registro: -1,
+    anio: -1,
+  });
+  res.send(list);
+});
+
+router.post("/fecha/responsable/:id", auth, async (req, res) => {
+  const { ini, end } = req.body;
+  const list = await Tarea.find({
+    "responsable._idUsuario": { $in: [mongoose.Types.ObjectId(req.params.id)] },
+    fecha: { $gte: ini },
+    fechaFin: { $lte: end },
+  }).sort({
+    registro: -1,
+    anio: -1,
+  });
+  res.send(list);
+});
+
 router.get("/responsable/:id", auth, async (req, res) => {
   const list = await Tarea.find({
     "responsable._idUsuario": { $in: [mongoose.Types.ObjectId(req.params.id)] },
