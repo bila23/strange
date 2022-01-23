@@ -31,6 +31,17 @@ router.get("/activos", auth, async (req, res) => {
   res.send(list);
 });
 
+router.get("/oficina/:oficina", auth, async (req, res) => {
+  const roles = ["OPERADOR"];
+  const list = await Usuario.find({
+    rol: roles,
+    oficina: req.params.oficina,
+  }).sort({
+    user: 1,
+  });
+  res.status(200).send(list);
+});
+
 router.get("/operador", auth, async (req, res) => {
   const roles = ["OPERADOR"];
   const list = await Usuario.find({ rol: roles }).sort({
