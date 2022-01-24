@@ -32,10 +32,8 @@ router.get("/activos", auth, async (req, res) => {
   res.send(list);
 });
 
-router.get("/operadores/oficina/:oficina", auth, async (req, res) => {
-  const roles = ["OPERADOR"];
+router.get("/oficina/:oficina", auth, async (req, res) => {
   const list = await Usuario.find({
-    rol: roles,
     oficina: [mongoose.Types.ObjectId(req.params.oficina)],
   }).sort({
     user: 1,
