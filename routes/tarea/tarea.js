@@ -81,6 +81,7 @@ router.get("/oficina/:id", auth, async (req, res) => {
 
 router.post("/fecha/oficina/:id", auth, async (req, res) => {
   const { ini, end } = req.body;
+
   const list = await Tarea.find({
     "responsable.oficinaId": { $in: [req.params.id] },
     fecha: { $gte: ini },
@@ -89,6 +90,7 @@ router.post("/fecha/oficina/:id", auth, async (req, res) => {
     registro: -1,
     anio: -1,
   });
+
   res.send(list);
 });
 
