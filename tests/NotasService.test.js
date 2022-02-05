@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const NotasService = require("../services/NotasService");
+const { TareasUsuario } = require("../models/tarea/tareasUsuario");
 const { MONGO_URL } = require("../start/db_url");
 
 describe("Funcionalidad relacionada a notas", () => {
@@ -20,6 +21,7 @@ describe("Funcionalidad relacionada a notas", () => {
 
   it("Separo los usuarios", async () => {
     await NotasService.separeteInUser();
+    await TareasUsuario.deleteMany();
     //expect(result.length).toBeGreaterThanOrEqual(0);
   });
 });
