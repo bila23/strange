@@ -4,9 +4,25 @@ const { Tarea } = require("../models/tarea/tarea");
 //recupero las tareas del dia
 //ingreso las tareas para los diferentes usuarios que hay en un dia
 //verificar que pasa si no hay usuarios
-//en el caso que si haya usuarios recuperar sus tareas
 //ver cuantas tareas han finalizado y cuantas tiene pendiente
 //calculo de nota
+//guardar la nota por dia
+
+async function tareasByUser() {
+  const now = new Date();
+  const list = await TareasUsuario.aggregate()
+    .addFields({
+      year: { $year: "$date" },
+      month: { $month: "$date" },
+      day: { $dayOfMonth: "$date" },
+    })
+    .match({
+      year: now.getFullYear(),
+      month: now.getMonth() + 1,
+      day: now.getDate(),
+    });
+  return list;
+}
 
 async function separeteInUser() {
   const tareas = await findTodayTareas();
@@ -49,3 +65,4 @@ async function findTodayTareas() {
 
 exports.findTodayTareas = findTodayTareas;
 exports.separeteInUser = separeteInUser;
+exports.tareasByUser = tareasByUser;

@@ -11,6 +11,7 @@ describe("Funcionalidad relacionada a notas", () => {
     });
   });
   afterAll(async () => {
+    await TareasUsuario.deleteMany();
     await mongoose.disconnect();
   });
 
@@ -21,7 +22,10 @@ describe("Funcionalidad relacionada a notas", () => {
 
   it("Separo los usuarios", async () => {
     await NotasService.separeteInUser();
-    await TareasUsuario.deleteMany();
-    //expect(result.length).toBeGreaterThanOrEqual(0);
+  });
+
+  it("Tareas por usuario", async () => {
+    const list = await NotasService.tareasByUser();
+    expect(list.length).toBe(2);
   });
 });
