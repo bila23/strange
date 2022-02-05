@@ -3,7 +3,7 @@ const Joi = require("joi");
 const Schema = mongoose.Schema;
 
 const notasSchema = new mongoose.Schema({
-  usuario: [{ type: Schema.Types.ObjectId, ref: "usuario" }],
+  usuario: { type: Schema.Types.ObjectId, ref: "usuario" },
   fecha: Date,
   total: Number,
   finalizadas: Number,
