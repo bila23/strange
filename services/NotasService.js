@@ -14,7 +14,6 @@ async function separeteInUser() {
   const result = _.uniq(tareas, function (model) {
     return model.responsable;
   });
-  console.log(result);
 }
 
 async function findTodayTareas() {
