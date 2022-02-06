@@ -34,3 +34,4 @@ function tareas_proc_aprob_to_pend() {
 }
 
 exports.tareas_proc_aprob_to_pend = tareas_proc_aprob_to_pend;
+exports.notas = notas;
