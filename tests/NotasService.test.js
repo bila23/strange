@@ -26,6 +26,7 @@ describe("Funcionalidad relacionada a notas", () => {
 
   it("Tareas por usuario", async () => {
     const list = await NotasService.tareasByUser();
-    expect(list.length).toBe(2);
+    const users = await NotasService.distinctUser();
+    await NotasService.calculateSaveNotas(users, list);
   });
 });

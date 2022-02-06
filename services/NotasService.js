@@ -1,26 +1,72 @@
+const _ = require("lodash");
 const { TareasUsuario } = require("../models/tarea/tareasUsuario");
 const { Tarea } = require("../models/tarea/tarea");
+const { Notas } = require("../models/tarea/notas");
 
-//recupero las tareas del dia
-//ingreso las tareas para los diferentes usuarios que hay en un dia
-//verificar que pasa si no hay usuarios
-//ver cuantas tareas han finalizado y cuantas tiene pendiente
-//calculo de nota
-//guardar la nota por dia
+async function calculateSaveNotas(users, tareas) {
+  if (users.length === 0 || tareas.length === 0) return null;
+
+  const now = new Date();
+
+  for (const user of users) {
+    const list = _.filter(tareas, function (model) {
+      return String(model.usuario) === String(user);
+    });
+    const result = _.groupBy(list, "state");
+    await saveNotas(user, result, now);
+  }
+}
+
+async function saveNotas(user, tareas, date) {
+  if (tareas.length === 0) return null;
+
+  await Notas.deleteOne({
+    usuario: user,
+    day: date.getDate(),
+    month: date.getMonth() + 1,
+    year: date.getFullYear(),
+  });
+
+  let keys = Object.keys(tareas);
+  let finalizadas = 0;
+  let nof = 0;
+  for (let i = 0; i < keys.length; i++) {
+    if (keys[i] === "FINALIZADA") finalizadas = tareas[keys[i]].length;
+    else if (keys[i] === "DENEGADA" || keys[i] === "INGRESADA");
+    else nof = nof + tareas[keys[i]].length;
+  }
+
+  const resultado = (finalizadas / (finalizadas + nof)) * 10;
+  let nota = new Notas({
+    usuario: user,
+    fecha: date,
+    day: date.getDate(),
+    month: date.getMonth() + 1,
+    year: date.getFullYear(),
+    resultado: resultado,
+    finalizadas: finalizadas,
+    pendientes: nof,
+  });
+  await nota.save();
+}
+
+async function distinctUser() {
+  const now = new Date();
+  const result = await TareasUsuario.find({
+    day: now.getDate(),
+    mes: now.getMonth() + 1,
+    year: now.getFullYear(),
+  }).distinct("usuario");
+  return result;
+}
 
 async function tareasByUser() {
   const now = new Date();
-  const list = await TareasUsuario.aggregate()
-    .addFields({
-      year: { $year: "$date" },
-      month: { $month: "$date" },
-      day: { $dayOfMonth: "$date" },
-    })
-    .match({
-      year: now.getFullYear(),
-      month: now.getMonth() + 1,
-      day: now.getDate(),
-    });
+  const list = await TareasUsuario.find({
+    day: now.getDate(),
+    mes: now.getMonth() + 1,
+    year: now.getFullYear(),
+  });
   return list;
 }
 
@@ -66,3 +112,5 @@ async function findTodayTareas() {
 exports.findTodayTareas = findTodayTareas;
 exports.separeteInUser = separeteInUser;
 exports.tareasByUser = tareasByUser;
+exports.distinctUser = distinctUser;
+exports.calculateSaveNotas = calculateSaveNotas;
