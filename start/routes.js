@@ -7,8 +7,10 @@ const oficina = require("../routes/tarea/oficina");
 const auth = require("../routes/auth/auth");
 const rol = require("../routes/auth/rol");
 const reprogramar = require("../routes/tarea/reprogramar");
+const notas = require("../routes/tarea/notas");
 
 module.exports = function (app) {
+  app.use("/notas", notas);
   app.use("/reprogramar", reprogramar);
   app.use("/rol", rol);
   app.use("/bitacora-estado", bitacoraEstado);
