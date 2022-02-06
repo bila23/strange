@@ -3,6 +3,13 @@ const { TareasUsuario } = require("../models/tarea/tareasUsuario");
 const { Tarea } = require("../models/tarea/tarea");
 const { Notas } = require("../models/tarea/notas");
 
+async function execute() {
+  await separeteInUser();
+  const tareas = await tareasByUser();
+  const users = await distinctUser();
+  await calculateSaveNotas(users, tareas);
+}
+
 async function calculateSaveNotas(users, tareas) {
   if (users.length === 0 || tareas.length === 0) return null;
 
@@ -114,3 +121,4 @@ exports.separeteInUser = separeteInUser;
 exports.tareasByUser = tareasByUser;
 exports.distinctUser = distinctUser;
 exports.calculateSaveNotas = calculateSaveNotas;
+exports.execute = execute;
