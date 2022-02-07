@@ -24,7 +24,7 @@ const tareaSchema = new mongoose.Schema({
   codigo: String,
   dias: Array,
   horaInicio: Date,
-  lider: { type: Schema.Types.ObjectId, ref: "usuario" },
+  lider: String,
   horaFin: Date,
   registro: Number,
   grupal: String,
