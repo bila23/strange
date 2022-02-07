@@ -43,7 +43,7 @@ async function saveInDays(model, estado) {
 }
 
 async function saveTarea(tarea, estado) {
-  if (!tarea.grupal || tarea.grupal === "NO")
+  if (!tarea.grupal || tarea.grupal === "NO" || tarea.grupal === "COMPARTIDA")
     await onlySave(tarea, estado, tarea.responsable);
   else if (tarea.grupal === "INDIVIDUAL")
     for (const responsable of tarea.responsable)
