@@ -43,6 +43,14 @@ async function saveInDays(model, estado) {
 }
 
 async function saveTarea(tarea, estado) {
+  if (!tarea.grupal || tarea.grupal === "NO")
+    await onlySave(tarea, estado, tarea.responsable);
+  else if (tarea.grupal === "INDIVIDUAL")
+    for (const responsable of tarea.responsable)
+      await onlySave(tarea, estado, responsable);
+}
+
+async function onlySave(tarea, estado, responsable) {
   let model = new Tarea(tarea);
   const registro = await generateCode();
   const todayMoment = moment();
@@ -51,12 +59,12 @@ async function saveTarea(tarea, estado) {
   model.registro = registro;
   model.mes = 1 + todayMoment.month();
   model.anio = todayMoment.year();
+  model.responsable = responsable;
   model.diaTarea = fecha.date();
   model.mesTarea = 1 + fecha.month();
   model.anioTarea = fecha.year();
   model.estado = estado;
   model.codigo = registro + " - " + todayMoment.year();
-
   await model.save();
 
   await saveBitacora(model._id, "", estado, model.usuario_crea);
