@@ -161,6 +161,7 @@ router.put("/autorizar/:id/:user", auth, async (req, res) => {
     fechaFin: req.body.fechaFin,
     horaInicio: req.body.horaInicio,
     horaFin: req.body.horaFin,
+    observacion: req.body.observacion,
     dias: req.body.dias,
     responsable: req.body.responsable,
     estado: "APROBADA",
@@ -238,6 +239,7 @@ router.put("/:id", auth, async (req, res) => {
   const conditions = { _id: req.params.id };
   const updateField = {
     descripcion: req.body.descripcion,
+    observacion: req.body.observacion,
     fecha: req.body.fecha,
     responsable: { $in: [mongoose.Types.ObjectId(req.body.responsable)] },
     estado: req.body.estado,
