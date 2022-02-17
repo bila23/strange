@@ -6,6 +6,13 @@ const ReprogramarService = require("../../services/ReprogramarService");
 const { Justificacion } = require("../../models/tarea/justificacion");
 const { Tarea } = require("../../models/tarea/tarea");
 
+router.get("/pendiente", auth, async (req, res) => {
+  const list = await Justificacion.find({ estado: "PENDIENTE" }).populate(
+    "tarea"
+  );
+  res.send(list);
+});
+
 router.post("/", auth, async (req, res) => {
   let model = new Justificacion(req.body);
   model = await model.save();
