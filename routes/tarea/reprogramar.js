@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../../middleware/auth");
 const moment = require("moment");
+const ReprogramarService = require("../../services/ReprogramarService");
 const { Justificacion } = require("../../models/tarea/justificacion");
 const { Tarea } = require("../../models/tarea/tarea");
 
@@ -9,6 +10,7 @@ router.post("/", auth, async (req, res) => {
   let model = new Justificacion(req.body);
   model = await model.save();
   //await updateTarea(req.body.tarea, req.body.nuevaFecha);
+  await ReprogramarService.sendToAuthorize();
   res.send(model);
 });
 
