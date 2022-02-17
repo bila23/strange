@@ -8,7 +8,7 @@ const { Tarea } = require("../../models/tarea/tarea");
 router.post("/", auth, async (req, res) => {
   let model = new Justificacion(req.body);
   model = await model.save();
-  await updateTarea(req.body.tarea, req.body.nuevaFecha);
+  //await updateTarea(req.body.tarea, req.body.nuevaFecha);
   res.send(model);
 });
 
@@ -24,6 +24,7 @@ async function updateTarea(tareaId, newDate) {
     diaTarea: fechaMoment.date(),
     mesTarea: 1 + fechaMoment.month(),
     anioTarea: fechaMoment.year(),
+    estado: "APROBADO",
   });
 }
 
