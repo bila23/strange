@@ -7,6 +7,7 @@ const schema = new mongoose.Schema({
   fechaAnterior: Date,
   nuevaFecha: Date,
   descripcion: String,
+  estado: String,
   usuario_crea: String,
   fecha_crea: {
     type: Date,
