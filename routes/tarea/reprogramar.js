@@ -13,10 +13,18 @@ router.get("/pendiente", auth, async (req, res) => {
   res.send(list);
 });
 
+router.get("/aprobar/:id", auth, async (req, res) => {
+  const model = await Justificacion.findByIdAndUpdate(req.params.id, {
+    estado: "APROBADA",
+  });
+  await updateTarea(model.tarea[0], model.nuevaFecha);
+  await ReprogramarService.sendToResp(model.tarea[0]);
+  res.send(model);
+});
+
 router.post("/", auth, async (req, res) => {
   let model = new Justificacion(req.body);
   model = await model.save();
-  //await updateTarea(req.body.tarea, req.body.nuevaFecha);
   await ReprogramarService.sendToAuthorize();
   res.send(model);
 });
