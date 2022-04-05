@@ -8,6 +8,13 @@ const { Tarea, validateTarea } = require("../../models/tarea/tarea");
 const { BitacoraEstado } = require("../../models/tarea/bitacoraEstado");
 const { Usuario } = require("../../models/tarea/usuario");
 
+router.get("/oficina/:oficina/resp", auth, async (req, res) => {
+  const responsables = await Usuario.find({ oficina: req.params.oficina }).sort(
+    { nombre: 1 }
+  );
+  res.send(responsables);
+});
+
 router.get("/pendientes/:user", auth, async (req, res) => {
   const list = await Tarea.find({
     estado: { $in: ["APROBADA", "EN PROCESO", "INGRESADA"] },
@@ -72,6 +79,17 @@ router.get("/indicadores/:user/:rol/:oficina", auth, async (req, res) => {
 router.get("/oficina/:id", auth, async (req, res) => {
   const list = await Tarea.find({
     "responsable.oficinaId": { $in: [req.params.id] },
+  }).sort({
+    registro: -1,
+    anio: -1,
+  });
+  res.send(list);
+});
+
+router.get("/resp/:resp/oficina/:id", auth, async (req, res) => {
+  const list = await Tarea.find({
+    "responsable.oficinaId": { $in: [req.params.id] },
+    "responsable._idUsuario": { $in: [req.params.resp] },
   }).sort({
     registro: -1,
     anio: -1,
